@@ -48,7 +48,6 @@ function isTopLevel(note: (typeof allNotes)[0]) {
           <section class="wiki-category">
             <h2 class="wiki-category-header">
               <span>{folder.replace(/-/g, ' ')}</span>
-              <span>{topLevel.length}</span>
             </h2>
             <ul class="wiki-note-list">
               {topLevel.map(note => {
@@ -82,7 +81,6 @@ function isTopLevel(note: (typeof allNotes)[0]) {
         <section class="wiki-category">
           <h2 class="wiki-category-header">
             <span>general</span>
-            <span>{rootNotes.filter(isTopLevel).length}</span>
           </h2>
           <ul class="wiki-note-list">
             {rootNotes.filter(isTopLevel).map(note => {
@@ -120,90 +118,103 @@ function isTopLevel(note: (typeof allNotes)[0]) {
 <style>
   .wiki-index {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 40px 48px;
+    gap: 22px;
+    max-width: 680px;
     padding-bottom: 64px;
-  }
-
-  @media (max-width: 760px) {
-    .wiki-index { grid-template-columns: 1fr; }
   }
 
   .wiki-category {
     min-width: 0;
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 22px;
+    padding: 0;
   }
 
   .wiki-category-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    align-items: baseline;
+    gap: 10px;
     font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.16em;
+    font-weight: 500;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--text-2);
-    padding: 0 0 10px;
-    border-bottom: 1px solid var(--border);
+    color: var(--text-3);
+    padding-top: 1px;
   }
 
-  .wiki-category-header span:last-child {
-    color: var(--text-3);
-    font-weight: 500;
+  .wiki-category-header span:first-child::before {
+    content: '/';
+    color: var(--accent);
+    margin-right: 2px;
   }
 
   .wiki-note-list {
     list-style: none;
+    display: grid;
+    gap: 6px;
   }
 
   .wiki-note-link {
     display: grid;
-    gap: 4px;
-    padding: 14px 0;
+    gap: 2px;
+    padding: 0;
     color: var(--text-2);
     transition: color var(--transition);
   }
 
   .wiki-note-link:hover,
   .wiki-note-link:focus-visible {
-    color: var(--text);
+    color: var(--accent-strong);
   }
 
   .wiki-note-title {
-    font-family: var(--font-serif);
-    font-size: 20px;
-    font-weight: 320;
-    letter-spacing: -0.015em;
-    line-height: 1.2;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.35;
     color: var(--text);
   }
 
   .wiki-note-desc {
-    font-size: 14px;
-    color: var(--text-2);
-    line-height: 1.55;
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.45;
+    max-width: 58ch;
+    padding-left: 0;
   }
 
   .wiki-children {
     list-style: none;
-    margin: 0 0 14px;
-    padding-left: 14px;
-    border-left: 1px solid var(--border);
+    margin: 0 0 4px 18px;
+    padding-left: 12px;
   }
 
   .wiki-child-link {
     display: block;
-    padding: 8px 10px;
-    font-size: 14px;
+    padding: 2px 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
     color: var(--text-3);
-    line-height: 1.45;
-    transition: color var(--transition), background var(--transition);
+    line-height: 1.4;
+    transition: color var(--transition);
   }
 
   .wiki-child-link:hover,
   .wiki-child-link:focus-visible {
     color: var(--text);
-    background: transparent;
+  }
+
+  @media (max-width: 680px) {
+    .wiki-category {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .wiki-category-header {
+      justify-content: flex-start;
+    }
   }
 </style>

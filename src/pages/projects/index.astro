@@ -31,13 +31,6 @@ const icons: Record<string, string> = {
         const href = project.data.url ?? project.data.github ?? `/projects/${project.slug}`;
         const external = href.startsWith('http');
         const iconPaths = icons[project.data.icon ?? 'github'];
-        const dateStr = project.data.date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        });
-        const targetLabel = project.data.github ? 'source' : project.data.url ? 'demo' : 'writeup';
-
         return (
           <a
             href={href}
@@ -56,20 +49,15 @@ const icons: Record<string, string> = {
                   {project.data.status}
                 </span>
               </div>
-              <div class="projects-list-meta">
-                <time datetime={project.data.date.toISOString()}>{dateStr}</time>
-                {external && <span>external ↗</span>}
-              </div>
-              <p class="projects-list-desc">{project.data.description}</p>
+              <p class="projects-list-desc">
+                {project.data.description.length > 120 ? `${project.data.description.slice(0, 117)}...` : project.data.description}
+              </p>
               {project.data.tags.length > 0 && (
                 <div class="projects-list-tags" aria-label="Stack and topics">
                   {project.data.tags.slice(0, 5).map((tag: string) => <span class="tag">{tag}</span>)}
                 </div>
               )}
-              <div class="projects-list-footer" aria-hidden="true">
-                <span>{targetLabel}</span>
-                <span>open ↗</span>
-              </div>
+
             </div>
           </a>
         );
@@ -85,13 +73,21 @@ const icons: Record<string, string> = {
   .project-grid {
     display: grid;
     padding: 8px 0 64px;
+    width: min(1120px, calc(100vw - 96px));
+  }
+
+  @media (max-width: 768px) {
+    .project-grid {
+      width: 100%;
+    }
   }
 
   .projects-list-card {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr);
-    gap: 18px;
-    padding: 22px 0;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 30px;
+    min-height: 132px;
+    padding: 16px 0;
     border-bottom: 1px solid var(--border);
     text-decoration: none;
     position: relative;
@@ -113,29 +109,37 @@ const icons: Record<string, string> = {
   }
 
   .projects-list-icon {
-    width: 42px;
-    height: 42px;
+    width: 132px;
+    height: 132px;
     display: grid;
     place-items: center;
+    border: 1px solid var(--border);
     color: var(--text-3);
-    transition: color var(--transition);
+    transition: color var(--transition), border-color var(--transition);
+  }
+
+  .projects-list-icon svg {
+    width: 58px;
+    height: 58px;
   }
 
   .projects-list-card:hover .projects-list-icon,
   .projects-list-card:focus-visible .projects-list-icon {
-    color: var(--text-2);
+    color: var(--accent-strong);
+    border-color: var(--border-2);
   }
 
   .projects-list-body {
     min-width: 0;
+    align-self: center;
   }
 
   .projects-list-top {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .projects-list-title {
@@ -150,62 +154,37 @@ const icons: Record<string, string> = {
     transition: color var(--transition), text-decoration-color var(--transition);
   }
 
-  .projects-list-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 14px;
-    margin-bottom: 10px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
-
   .projects-list-desc {
-    max-width: 68ch;
+    max-width: 92ch;
     font-size: 15px;
     color: var(--text-2);
-    line-height: 1.72;
-    margin-bottom: 12px;
+    line-height: 1.55;
+    margin-bottom: 10px;
   }
 
   .projects-list-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .projects-list-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding-top: 2px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    transition: color var(--transition);
-  }
-
-  .projects-list-card:hover .projects-list-footer,
-  .projects-list-card:focus-visible .projects-list-footer {
-    color: var(--text-2);
+    margin-bottom: 10px;
   }
 
   @media (max-width: 560px) {
     .projects-list-card {
-      grid-template-columns: 34px minmax(0, 1fr);
+      grid-template-columns: 72px minmax(0, 1fr);
       gap: 14px;
-      padding: 18px 0;
+      min-height: 96px;
+      padding: 16px 0;
     }
 
     .projects-list-icon {
-      width: 34px;
-      height: 34px;
+      width: 72px;
+      height: 72px;
+    }
+
+    .projects-list-icon svg {
+      width: 32px;
+      height: 32px;
     }
 
     .projects-list-top {

@@ -44,6 +44,65 @@ const pathname = Astro.url.pathname;
         document.documentElement.style.colorScheme = theme;
       })();
     </script>
+    <script is:inline>
+      (() => {
+        const copyIcon = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 2H6a2 2 0 0 0-2 2v12" />
+            <rect x="8" y="6" width="12" height="16" rx="2" />
+          </svg>`;
+
+        function enhanceCodeBlocks() {
+          document.querySelectorAll('.prose pre').forEach((pre) => {
+            if (pre.querySelector(':scope > .code-copy-button')) return;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'code-copy-button';
+            button.setAttribute('aria-label', 'Copy code');
+            button.innerHTML = copyIcon;
+            pre.appendChild(button);
+          });
+        }
+
+        document.addEventListener('astro:page-load', enhanceCodeBlocks);
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', enhanceCodeBlocks);
+        } else {
+          enhanceCodeBlocks();
+        }
+
+        document.addEventListener('click', async (event) => {
+          const button = event.target instanceof Element ? event.target.closest('.code-copy-button') : null;
+          if (!button) return;
+
+          const pre = button.closest('.prose pre');
+          if (!pre) return;
+
+          const code = pre.querySelector('code');
+          const text = code?.textContent ?? '';
+          if (!text.trim()) return;
+
+          try {
+            await navigator.clipboard.writeText(text.replace(/\n$/, ''));
+            pre.setAttribute('data-copied', 'true');
+            const original = button.innerHTML;
+            button.textContent = 'copied';
+            window.setTimeout(() => {
+              pre.removeAttribute('data-copied');
+              button.innerHTML = original;
+            }, 1300);
+          } catch {
+            pre.setAttribute('data-copy-failed', 'true');
+            const original = button.innerHTML;
+            button.textContent = 'failed';
+            window.setTimeout(() => {
+              pre.removeAttribute('data-copy-failed');
+              button.innerHTML = original;
+            }, 1300);
+          }
+        });
+      })();
+    </script>
 
   </head>
 
