@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allNotes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0) || a.data.title.localeCompare(b.data.title));
+
+// Group by folder (first segment of slug path)
+const byFolder: Record<string, typeof allNotes> = {};
+for (const note of allNotes) {
+  const parts = note.slug.split('/');
+  const folder = parts.length > 1 ? parts[0] : '_root';
+  if (!byFolder[folder]) byFolder[folder] = [];
+  byFolder[folder].push(note);
+}
+
+// Separate root-level notes and categorized notes
+const { _root: rootNotes = [], ...folders } = byFolder;
+const sortedFolders = Object.entries(folders).sort(([a], [b]) => a.localeCompare(b));
+
+// For each note, find its children (notes with parent = this note's slug)
+function getChildren(slug: string) {
+  return allNotes.filter(n => n.data.parent === slug);
+}
+function isTopLevel(note: (typeof allNotes)[0]) {
+  return !note.data.parent;
+}
+---
+
+<BaseLayout title="Notes" description="Security reference notes and cheatsheets, organized by topic.">
+  <div class="container">
+    <header class="page-header">
+      <p class="page-header-label">wiki</p>
+      <h1 class="page-header-title">Notes</h1>
+      <p class="page-header-desc">
+        Reference notes organized like an Obsidian vault. Notes link to each other where relevant.
+      </p>
+    </header>
+
+    <div class="wiki-index">
+      {sortedFolders.map(([folder, notes]) => {
+        const topLevel = notes.filter(isTopLevel);
+        return (
+          <section class="wiki-category">
+            <h2 class="wiki-category-header">{folder.replace(/-/g, ' ')}</h2>
+            <ul class="wiki-note-list">
+              {topLevel.map(note => {
+                const children = getChildren(note.slug);
+                return (
+                  <li class="wiki-note-item">
+                    <a href={`/notes/${note.slug}`} class="wiki-note-link">
+                      {note.data.title}
+                    </a>
+                    {children.length > 0 && (
+                      <ul class="wiki-children">
+                        {children.map(child => (
+                          <li class="wiki-child-item">
+                            <a href={`/notes/${child.slug}`} class="wiki-child-link">
+                              {child.data.title}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
+
+      {rootNotes.filter(isTopLevel).length > 0 && (
+        <section class="wiki-category">
+          <h2 class="wiki-category-header">general</h2>
+          <ul class="wiki-note-list">
+            {rootNotes.filter(isTopLevel).map(note => {
+              const children = getChildren(note.slug);
+              return (
+                <li class="wiki-note-item">
+                  <a href={`/notes/${note.slug}`} class="wiki-note-link">
+                    {note.data.title}
+                  </a>
+                  {children.length > 0 && (
+                    <ul class="wiki-children">
+                      {children.map(child => (
+                        <li class="wiki-child-item">
+                          <a href={`/notes/${child.slug}`} class="wiki-child-link">
+                            {child.data.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .wiki-index {
+    padding-bottom: 64px;
+    columns: 2;
+    column-gap: 48px;
+  }
+
+  @media (max-width: 680px) {
+    .wiki-index { columns: 1; }
+  }
+
+  .wiki-category {
+    break-inside: avoid;
+    margin-bottom: 36px;
+  }
+
+  .wiki-category-header {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--notes);
+    padding-bottom: 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .wiki-note-list {
+    list-style: none;
+    margin-top: 2px;
+  }
+
+  .wiki-note-item {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .wiki-note-link {
+    display: block;
+    padding: 9px 0;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.4;
+    transition: color var(--transition);
+  }
+
+  .wiki-note-link:hover {
+    color: var(--amber-light);
+  }
+
+  .wiki-children {
+    list-style: none;
+    margin-bottom: 4px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border);
+    margin-left: 0;
+  }
+
+  .wiki-child-item + .wiki-child-item {
+    border-top: 1px solid var(--border);
+  }
+
+  .wiki-child-link {
+    display: block;
+    padding: 7px 8px;
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.4;
+    transition: color var(--transition);
+  }
+
+  .wiki-child-link:hover {
+    color: var(--amber-light);
+  }
+</style>

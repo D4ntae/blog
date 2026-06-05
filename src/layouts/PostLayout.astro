@@ -1,0 +1,74 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Badge from '@/components/Badge.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  collection: 'blog' | 'research' | 'notes' | 'projects';
+  readingTime?: string;
+}
+
+const { title, description, date, tags, collection, readingTime } = Astro.props;
+
+const dateStr = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const collectionLabels: Record<string, string> = {
+  blog:     'Blog',
+  research: 'Research',
+  notes:    'Notes',
+  projects: 'Projects',
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container">
+    <header class="post-header">
+      <a href={`/${collection}`} class="post-back">{collectionLabels[collection]}</a>
+
+      <h1 class="post-title">{title}</h1>
+
+      <div class="post-meta">
+        <Badge variant={collection}>{collectionLabels[collection]}</Badge>
+        <span class="post-meta-date">{dateStr}</span>
+        {readingTime && <span class="post-meta-reading">{readingTime}</span>}
+        {tags.length > 0 && (
+          <div class="post-meta-tags">
+            {tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        )}
+      </div>
+    </header>
+
+    <article class="prose">
+      <slot />
+    </article>
+
+    <div class="post-footer">
+      <a href={`/${collection}`} class="post-back">← Back to {collectionLabels[collection]}</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .post-meta :global(.badge) {
+    padding: 4px 10px;
+  }
+
+  .post-meta-reading {
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+
+  .post-footer {
+    padding: 48px 0 64px;
+    margin-top: 48px;
+  }
+</style>

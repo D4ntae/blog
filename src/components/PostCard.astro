@@ -1,0 +1,30 @@
+---
+import Badge from '@/components/Badge.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  href: string;
+  collection: 'blog' | 'research' | 'notes' | 'projects';
+  showBadge?: boolean;
+}
+
+const { title, description, tags, href, collection, showBadge = false } = Astro.props;
+---
+
+<a href={href} class="post-card">
+  {showBadge && (
+    <div class="post-card-meta">
+      <Badge variant={collection}>{collection}</Badge>
+    </div>
+  )}
+  <h2 class="post-card-title">{title}</h2>
+  <p class="post-card-desc">{description}</p>
+  {tags.length > 0 && (
+    <div class="post-card-tags">
+      {tags.map(tag => <span class="tag">{tag}</span>)}
+    </div>
+  )}
+</a>

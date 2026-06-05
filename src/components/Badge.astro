@@ -1,0 +1,7 @@
+---
+interface Props {
+  variant: 'blog' | 'research' | 'notes' | 'projects' | 'outline';
+}
+const { variant } = Astro.props;
+---
+<span class:list={['badge', `badge-${variant}`]}><slot /></span>

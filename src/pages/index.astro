@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allBlog     = await getCollection('blog',     ({ data }) => !data.draft);
+const allResearch = await getCollection('research', ({ data }) => !data.draft);
+const allNotes    = await getCollection('notes',    ({ data }) => !data.draft);
+
+const allPosts = [
+  ...allBlog    .map(p => ({ ...p, collection: 'blog'     as const })),
+  ...allResearch.map(p => ({ ...p, collection: 'research' as const })),
+  ...allNotes   .map(p => ({ ...p, collection: 'notes'    as const })),
+]
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
+---
+
+<BaseLayout title="Danko Delimar">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">dantae.dev</p>
+      <h1 class="hero-name">
+        DANKO<br />
+        DELIMAR<span class="hero-cursor"></span>
+      </h1>
+      <p class="hero-alias">// dantae</p>
+      <p class="hero-tagline">
+        security researcher &amp; builder.<br />
+        writing about infosec, tools, ctfs, and everything in between.
+      </p>
+      <nav class="hero-actions" aria-label="Sections">
+        <a href="/blog"     class="hero-action">Blog</a>
+        <a href="/research" class="hero-action">Research</a>
+        <a href="/notes"    class="hero-action">Notes</a>
+        <a href="/projects" class="hero-action">Projects</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Recent posts -->
+  <section>
+    <div class="container">
+      <p class="home-section-label">Recent</p>
+      <div class="post-list">
+        {allPosts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            tags={post.data.tags}
+            href={`/${post.collection}/${post.slug}`}
+            collection={post.collection}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .home-section-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 40px 0 0;
+    margin-bottom: 4px;
+  }
+
+  .hero-alias {
+    font-size: 13px;
+    color: var(--amber);
+    letter-spacing: 0.08em;
+    margin-bottom: 28px;
+    margin-top: -20px;
+    font-family: var(--font-mono);
+    opacity: 0.7;
+  }
+</style>
