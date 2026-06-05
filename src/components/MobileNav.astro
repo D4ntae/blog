@@ -96,21 +96,25 @@ const year = new Date().getFullYear();
   .drawer {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 1000;
+  }
+
+  .drawer[hidden] {
+    display: none;
   }
 
   .drawer-backdrop {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    background: rgba(8, 9, 13, 0.72);
+    background: rgba(8, 9, 13, 0.78);
   }
 
   :global([data-theme='light']) .drawer-backdrop {
-    background: rgba(28, 32, 38, 0.28);
+    background: rgba(28, 32, 38, 0.32);
   }
 
   .drawer-panel {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
