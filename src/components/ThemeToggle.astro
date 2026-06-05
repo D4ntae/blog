@@ -1,0 +1,76 @@
+<button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme" data-theme-toggle>
+  <svg class="theme-toggle-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+  <svg class="theme-toggle-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20.98 15.38A8.5 8.5 0 0 1 8.62 3.02a7 7 0 1 0 12.36 12.36Z" />
+  </svg>
+</button>
+
+<script is:inline>
+  (() => {
+    const storageKey = 'dantae-theme';
+    const root = document.documentElement;
+
+    function systemTheme() {
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+
+    function currentTheme() {
+      return root.dataset.theme || localStorage.getItem(storageKey) || systemTheme();
+    }
+
+    function apply(theme) {
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
+      document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+        button.setAttribute('aria-label', `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`);
+        button.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      });
+    }
+
+    apply(currentTheme());
+
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+      if (button.dataset.boundThemeToggle) return;
+      button.dataset.boundThemeToggle = 'true';
+      button.addEventListener('click', () => {
+        const next = currentTheme() === 'light' ? 'dark' : 'light';
+        localStorage.setItem(storageKey, next);
+        apply(next);
+      });
+    });
+  })();
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color var(--transition), border-color var(--transition), background var(--transition);
+  }
+
+  .theme-toggle:hover {
+    color: var(--accent-strong);
+    border-color: var(--border-2);
+    background: rgba(255,255,255,0.012);
+  }
+
+  :global([data-theme='light']) .theme-toggle:hover {
+    background: rgba(10, 18, 32, 0.035);
+  }
+
+  .theme-toggle-sun { display: none; }
+  .theme-toggle-moon { display: block; }
+
+  :global([data-theme='light']) .theme-toggle-sun { display: block; }
+  :global([data-theme='light']) .theme-toggle-moon { display: none; }
+</style>

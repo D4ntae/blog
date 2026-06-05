@@ -23,8 +23,7 @@ const year = new Date().getFullYear();
   <div class="drawer-backdrop"></div>
   <div class="drawer-panel">
     <div class="drawer-top">
-      <a href="/" class="drawer-logo">DD<span class="drawer-logo-dot">.</span></a>
-      <p class="drawer-name">Danko Delimar <span class="drawer-nick">/ dantae</span></p>
+      <a href="/" class="drawer-name">Dantae</a>
       <p class="drawer-tagline">security researcher &amp; builder</p>
     </div>
 
@@ -48,6 +47,7 @@ const year = new Date().getFullYear();
       <div class="drawer-links">
         <a href="https://github.com/D4ntae" class="drawer-ext-link" target="_blank" rel="noopener">github ↗</a>
         <a href="mailto:danko.delimar@gmail.com" class="drawer-ext-link">email</a>
+        <a href="/rss.xml" class="drawer-ext-link">rss</a>
       </div>
       <p class="drawer-copy">© {year} Danko Delimar</p>
     </div>
@@ -102,7 +102,11 @@ const year = new Date().getFullYear();
   .drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(9, 9, 12, 0.7);
+    background: rgba(8, 9, 13, 0.72);
+  }
+
+  :global([data-theme='light']) .drawer-backdrop {
+    background: rgba(28, 32, 38, 0.28);
   }
 
   .drawer-panel {
@@ -120,31 +124,21 @@ const year = new Date().getFullYear();
 
   .drawer-top { margin-bottom: 40px; }
 
-  .drawer-logo {
+  .drawer-name {
     display: inline-block;
     font-family: var(--font-serif);
     font-size: 26px;
     font-weight: 300;
     color: var(--text);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.035em;
     margin-bottom: 8px;
+    transition: color var(--transition);
   }
 
-  .drawer-logo-dot { color: var(--amber); }
-
-  .drawer-name {
-    font-size: 11px;
-    color: var(--text-2);
-    letter-spacing: 0.03em;
-    margin-bottom: 4px;
-  }
-
-  .drawer-nick {
-    color: var(--amber);
-    opacity: 0.7;
-  }
+  .drawer-name:hover { color: var(--accent-strong); }
 
   .drawer-tagline {
+    font-family: var(--font-mono);
     font-size: 11px;
     color: var(--text-3);
     letter-spacing: 0.04em;
@@ -164,6 +158,7 @@ const year = new Date().getFullYear();
     align-items: center;
     gap: 10px;
     padding: 9px 10px;
+    font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -172,7 +167,7 @@ const year = new Date().getFullYear();
   }
 
   .drawer-link:hover { color: var(--text); background: var(--surface); }
-  .drawer-link--active { color: var(--amber); }
+  .drawer-link--active { color: var(--accent); }
 
   .drawer-link-dot {
     display: inline-block;
@@ -199,14 +194,16 @@ const year = new Date().getFullYear();
   }
 
   .drawer-ext-link {
+    font-family: var(--font-mono);
     font-size: 11px;
     color: var(--text-3);
     letter-spacing: 0.06em;
   }
 
-  .drawer-ext-link:hover { color: var(--amber); }
+  .drawer-ext-link:hover { color: var(--accent); }
 
   .drawer-copy {
+    font-family: var(--font-mono);
     font-size: 10px;
     color: var(--text-3);
     letter-spacing: 0.04em;

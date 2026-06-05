@@ -12,19 +12,27 @@ const posts = (await getCollection('research', ({ data }) => !data.draft))
     <header class="page-header">
       <h1 class="page-header-title">Research</h1>
       <p class="page-header-desc">Vulnerability analysis, CTF writeups, and original security findings.</p>
+      <div class="page-header-meta" aria-label="Research index metadata">
+        <span><strong>{posts.length}</strong> reports</span>
+        <span>ordered by publication date</span>
+      </div>
     </header>
 
-    <div class="post-list">
-      {posts.map(post => (
-        <PostCard
-          title={post.data.title}
-          description={post.data.description}
-          date={post.data.date}
-          tags={post.data.tags}
-          href={`/research/${post.slug}`}
-          collection="research"
-        />
-      ))}
-    </div>
+    {posts.length > 0 ? (
+      <div class="post-list">
+        {posts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            tags={post.data.tags}
+            href={`/research/${post.slug}`}
+            collection="research"
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">No research reports published yet.</p>
+    )}
   </div>
 </BaseLayout>

@@ -1,4 +1,6 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+
 const pathname = Astro.url.pathname;
 
 const links = [
@@ -13,10 +15,10 @@ const year = new Date().getFullYear();
 
 <aside class="sidebar">
   <div class="sidebar-top">
-    <a href="/" class="sidebar-logo" aria-label="Home">
-      DD<span class="sidebar-logo-dot">.</span>
-    </a>
-    <p class="sidebar-name">Danko Delimar <span class="sidebar-nick">/ dantae</span></p>
+    <div class="sidebar-identity">
+      <a href="/" class="sidebar-name" aria-label="Home">Dantae</a>
+      <ThemeToggle />
+    </div>
     <p class="sidebar-tagline">security researcher &amp; builder</p>
   </div>
 
@@ -55,6 +57,13 @@ const year = new Date().getFullYear();
           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
         </svg>
       </a>
+      <a href="/rss.xml" class="sidebar-icon-link" aria-label="RSS feed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 11a9 9 0 0 1 9 9"/>
+          <path d="M4 4a16 16 0 0 1 16 16"/>
+          <circle cx="5" cy="19" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
     </div>
     <p class="sidebar-copy">© {year} Danko Delimar</p>
   </div>
@@ -72,34 +81,31 @@ const year = new Date().getFullYear();
     margin-bottom: 40px;
   }
 
-  .sidebar-logo {
-    display: inline-block;
-    font-family: var(--font-serif);
-    font-size: 26px;
-    font-weight: 300;
-    color: var(--text);
-    letter-spacing: -0.04em;
-    margin-bottom: 10px;
-    transition: opacity 120ms;
+  .sidebar-identity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
   }
-
-  .sidebar-logo:hover { opacity: 0.8; }
-
-  .sidebar-logo-dot { color: var(--amber); }
 
   .sidebar-name {
-    font-size: 11px;
-    color: var(--text-2);
-    letter-spacing: 0.03em;
-    margin-bottom: 4px;
+    display: inline-block;
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.035em;
+    margin-bottom: 0;
+    transition: color var(--transition);
   }
 
-  .sidebar-nick {
-    color: var(--amber);
-    opacity: 0.7;
+  .sidebar-name:hover {
+    color: var(--accent-strong);
   }
 
   .sidebar-tagline {
+    font-family: var(--font-mono);
     font-size: 11px;
     color: var(--text-3);
     letter-spacing: 0.04em;
@@ -122,6 +128,7 @@ const year = new Date().getFullYear();
     align-items: center;
     gap: 10px;
     padding: 9px 10px;
+    font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -139,10 +146,10 @@ const year = new Date().getFullYear();
   }
 
   .sidebar-link--active {
-    color: var(--amber);
+    color: var(--accent);
   }
 
-  .sidebar-link--active:hover { background: var(--amber-dim); }
+  .sidebar-link--active:hover { background: var(--accent-soft); }
 
   .sidebar-link-indicator {
     display: inline-block;
@@ -180,11 +187,12 @@ const year = new Date().getFullYear();
   }
 
   .sidebar-icon-link:hover {
-    color: var(--amber);
-    background: var(--amber-dim);
+    color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .sidebar-copy {
+    font-family: var(--font-mono);
     font-size: 10px;
     color: var(--text-3);
     letter-spacing: 0.04em;

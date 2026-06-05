@@ -30,33 +30,41 @@ function isTopLevel(note: (typeof allNotes)[0]) {
 <BaseLayout title="Notes" description="Security reference notes and cheatsheets, organized by topic.">
   <div class="container">
     <header class="page-header">
-      <p class="page-header-label">wiki</p>
       <h1 class="page-header-title">Notes</h1>
       <p class="page-header-desc">
-        Reference notes organized like an Obsidian vault. Notes link to each other where relevant.
+        Reference notes organized like an Obsidian vault. Cheatsheets, commands, and small explanations grouped by topic.
       </p>
+      <div class="page-header-meta" aria-label="Notes index metadata">
+        <span><strong>{allNotes.length}</strong> notes</span>
+        <span><strong>{sortedFolders.length + (rootNotes.length > 0 ? 1 : 0)}</strong> sections</span>
+      </div>
     </header>
 
+    {allNotes.length > 0 ? (
     <div class="wiki-index">
       {sortedFolders.map(([folder, notes]) => {
         const topLevel = notes.filter(isTopLevel);
         return (
           <section class="wiki-category">
-            <h2 class="wiki-category-header">{folder.replace(/-/g, ' ')}</h2>
+            <h2 class="wiki-category-header">
+              <span>{folder.replace(/-/g, ' ')}</span>
+              <span>{topLevel.length}</span>
+            </h2>
             <ul class="wiki-note-list">
               {topLevel.map(note => {
                 const children = getChildren(note.slug);
                 return (
                   <li class="wiki-note-item">
                     <a href={`/notes/${note.slug}`} class="wiki-note-link">
-                      {note.data.title}
+                      <span class="wiki-note-title">{note.data.title}</span>
+                      <span class="wiki-note-desc">{note.data.description}</span>
                     </a>
                     {children.length > 0 && (
                       <ul class="wiki-children">
                         {children.map(child => (
                           <li class="wiki-child-item">
                             <a href={`/notes/${child.slug}`} class="wiki-child-link">
-                              {child.data.title}
+                              <span>{child.data.title}</span>
                             </a>
                           </li>
                         ))}
@@ -72,21 +80,25 @@ function isTopLevel(note: (typeof allNotes)[0]) {
 
       {rootNotes.filter(isTopLevel).length > 0 && (
         <section class="wiki-category">
-          <h2 class="wiki-category-header">general</h2>
+          <h2 class="wiki-category-header">
+            <span>general</span>
+            <span>{rootNotes.filter(isTopLevel).length}</span>
+          </h2>
           <ul class="wiki-note-list">
             {rootNotes.filter(isTopLevel).map(note => {
               const children = getChildren(note.slug);
               return (
                 <li class="wiki-note-item">
                   <a href={`/notes/${note.slug}`} class="wiki-note-link">
-                    {note.data.title}
+                    <span class="wiki-note-title">{note.data.title}</span>
+                    <span class="wiki-note-desc">{note.data.description}</span>
                   </a>
                   {children.length > 0 && (
                     <ul class="wiki-children">
                       {children.map(child => (
                         <li class="wiki-child-item">
                           <a href={`/notes/${child.slug}`} class="wiki-child-link">
-                            {child.data.title}
+                            <span>{child.data.title}</span>
                           </a>
                         </li>
                       ))}
@@ -99,81 +111,99 @@ function isTopLevel(note: (typeof allNotes)[0]) {
         </section>
       )}
     </div>
+    ) : (
+      <p class="empty-state">No notes published yet.</p>
+    )}
   </div>
 </BaseLayout>
 
 <style>
   .wiki-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 48px;
     padding-bottom: 64px;
-    columns: 2;
-    column-gap: 48px;
   }
 
-  @media (max-width: 680px) {
-    .wiki-index { columns: 1; }
+  @media (max-width: 760px) {
+    .wiki-index { grid-template-columns: 1fr; }
   }
 
   .wiki-category {
-    break-inside: avoid;
-    margin-bottom: 36px;
+    min-width: 0;
   }
 
   .wiki-category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--notes);
-    padding-bottom: 10px;
-    margin-bottom: 4px;
+    color: var(--text-2);
+    padding: 0 0 10px;
     border-bottom: 1px solid var(--border);
+  }
+
+  .wiki-category-header span:last-child {
+    color: var(--text-3);
+    font-weight: 500;
   }
 
   .wiki-note-list {
     list-style: none;
-    margin-top: 2px;
-  }
-
-  .wiki-note-item {
-    border-bottom: 1px solid var(--border);
   }
 
   .wiki-note-link {
-    display: block;
-    padding: 9px 0;
-    font-size: 13px;
+    display: grid;
+    gap: 4px;
+    padding: 14px 0;
     color: var(--text-2);
-    line-height: 1.4;
     transition: color var(--transition);
   }
 
-  .wiki-note-link:hover {
-    color: var(--amber-light);
+  .wiki-note-link:hover,
+  .wiki-note-link:focus-visible {
+    color: var(--text);
+  }
+
+  .wiki-note-title {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 320;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .wiki-note-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.55;
   }
 
   .wiki-children {
     list-style: none;
-    margin-bottom: 4px;
-    padding-left: 12px;
-    border-left: 2px solid var(--border);
-    margin-left: 0;
-  }
-
-  .wiki-child-item + .wiki-child-item {
-    border-top: 1px solid var(--border);
+    margin: 0 0 14px;
+    padding-left: 14px;
+    border-left: 1px solid var(--border);
   }
 
   .wiki-child-link {
     display: block;
-    padding: 7px 8px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 14px;
     color: var(--text-3);
-    line-height: 1.4;
-    transition: color var(--transition);
+    line-height: 1.45;
+    transition: color var(--transition), background var(--transition);
   }
 
-  .wiki-child-link:hover {
-    color: var(--amber-light);
+  .wiki-child-link:hover,
+  .wiki-child-link:focus-visible {
+    color: var(--text);
+    background: transparent;
   }
 </style>

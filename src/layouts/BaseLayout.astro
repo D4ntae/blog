@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Sidebar from '../components/Sidebar.astro';
 import MobileNav from '../components/MobileNav.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
   title: string;
@@ -33,6 +34,16 @@ const pathname = Astro.url.pathname;
     <meta property="og:type" content="website" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="Dantae RSS Feed" href="/rss.xml" />
+    <script is:inline>
+      (() => {
+        const storageKey = 'dantae-theme';
+        const saved = localStorage.getItem(storageKey);
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
 
   </head>
 
@@ -44,12 +55,13 @@ const pathname = Astro.url.pathname;
 
     <!-- Content area -->
     <div class="content-wrapper">
-      <!-- Mobile header: logo + hamburger, hidden on desktop -->
+      <!-- Mobile header: name + hamburger, hidden on desktop -->
       <header class="mobile-header">
-        <a href="/" class="mobile-logo" aria-label="Home">
-          DD<span class="mobile-logo-dot">.</span>
-        </a>
-        <MobileNav pathname={pathname} />
+        <a href="/" class="mobile-logo" aria-label="Home">Dantae</a>
+        <div class="mobile-actions">
+          <ThemeToggle />
+          <MobileNav pathname={pathname} />
+        </div>
       </header>
 
       <main class="main">
@@ -90,6 +102,12 @@ const pathname = Astro.url.pathname;
     flex: 1;
   }
 
+  .mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   @media (max-width: 768px) {
     .sidebar-wrapper {
       display: none;
@@ -105,9 +123,13 @@ const pathname = Astro.url.pathname;
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(9, 9, 12, 0.92);
+      background: rgba(8, 9, 13, 0.94);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
+    }
+
+    :global([data-theme='light']) .mobile-header {
+      background: rgba(243, 239, 231, 0.92);
     }
   }
 
@@ -116,10 +138,6 @@ const pathname = Astro.url.pathname;
     font-size: 22px;
     font-weight: 300;
     color: var(--text);
-    letter-spacing: -0.04em;
-  }
-
-  .mobile-logo-dot {
-    color: var(--amber);
+    letter-spacing: -0.035em;
   }
 </style>

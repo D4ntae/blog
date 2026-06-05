@@ -1,6 +1,5 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import Badge from '@/components/Badge.astro';
 
 interface Props {
   title: string;
@@ -29,24 +28,39 @@ const collectionLabels: Record<string, string> = {
 
 <BaseLayout title={title} description={description}>
   <div class="container">
-    <header class="post-header">
+    <header class="post-header" data-collection={collection}>
       <a href={`/${collection}`} class="post-back">{collectionLabels[collection]}</a>
 
-      <h1 class="post-title">{title}</h1>
+      <div class="post-kicker">
+        <span>{collection === 'research' ? 'field report' : collection === 'notes' ? 'reference note' : 'entry'}</span>
+      </div>
 
-      <div class="post-meta">
-        <Badge variant={collection}>{collectionLabels[collection]}</Badge>
-        <span class="post-meta-date">{dateStr}</span>
-        {readingTime && <span class="post-meta-reading">{readingTime}</span>}
-        {tags.length > 0 && (
-          <div class="post-meta-tags">
-            {tags.map(tag => <span class="tag">{tag}</span>)}
+      <h1 class="post-title">{title}</h1>
+      <p class="post-dek">{description}</p>
+
+      <dl class="post-meta" aria-label="Post metadata">
+        <div>
+          <dt>Published</dt>
+          <dd><time datetime={date.toISOString()}>{dateStr}</time></dd>
+        </div>
+        {readingTime && (
+          <div>
+            <dt>Read time</dt>
+            <dd>{readingTime}</dd>
           </div>
         )}
-      </div>
+        {tags.length > 0 && (
+          <div class="post-meta-topic">
+            <dt>Topics</dt>
+            <dd class="post-meta-tags">
+              {tags.map(tag => <span class="tag">{tag}</span>)}
+            </dd>
+          </div>
+        )}
+      </dl>
     </header>
 
-    <article class="prose">
+    <article class="prose" data-collection={collection}>
       <slot />
     </article>
 
@@ -57,18 +71,82 @@ const collectionLabels: Record<string, string> = {
 </BaseLayout>
 
 <style>
-  .post-meta :global(.badge) {
-    padding: 4px 10px;
+  .post-kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
   }
 
-  .post-meta-reading {
-    font-size: 11px;
+  .post-dek {
+    max-width: 68ch;
+    margin: -8px 0 28px;
+    color: var(--text-2);
+    font-size: clamp(17px, 2vw, 19px);
+    line-height: 1.75;
+  }
+
+  .post-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, auto));
+    justify-content: start;
+    gap: 1px;
+    width: fit-content;
+    max-width: 100%;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .post-meta div {
+    min-width: 130px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.012);
+  }
+
+  .post-meta-topic {
+    min-width: min(340px, 100%);
+  }
+
+  .post-meta dt {
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: var(--text-3);
-    letter-spacing: 0.04em;
+  }
+
+  .post-meta dd {
+    color: var(--text-2);
+    font-size: 13px;
+  }
+
+  .post-meta time,
+  .post-meta dd:not(.post-meta-tags) {
+    font-family: var(--font-mono);
+  }
+
+  .post-meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .post-footer {
     padding: 48px 0 64px;
     margin-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 680px) {
+    .post-meta {
+      grid-template-columns: 1fr;
+      width: 100%;
+    }
   }
 </style>

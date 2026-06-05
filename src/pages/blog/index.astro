@@ -13,27 +13,35 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags))].sort();
   <div class="container">
     <header class="page-header">
       <h1 class="page-header-title">Blog</h1>
-      <p class="page-header-desc">Longer-form thoughts on security, tooling, and ideas worth sharing.</p>
+      <p class="page-header-desc">Longer-form thoughts on security, tooling, CTFs, and ideas worth sharing.</p>
+      <div class="page-header-meta" aria-label="Blog index metadata">
+        <span><strong>{posts.length}</strong> entries</span>
+        <span><strong>{allTags.length}</strong> tags</span>
+      </div>
     </header>
 
     {allTags.length > 0 && (
-      <div class="tag-filter">
+      <div class="tag-filter" aria-label="Topics covered">
         {allTags.map(tag => <span class="tag">{tag}</span>)}
       </div>
     )}
 
-    <div class="post-list">
-      {posts.map(post => (
-        <PostCard
-          title={post.data.title}
-          description={post.data.description}
-          date={post.data.date}
-          tags={post.data.tags}
-          href={`/blog/${post.slug}`}
-          collection="blog"
-        />
-      ))}
-    </div>
+    {posts.length > 0 ? (
+      <div class="post-list">
+        {posts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            tags={post.data.tags}
+            href={`/blog/${post.slug}`}
+            collection="blog"
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="empty-state">No blog entries published yet.</p>
+    )}
   </div>
 </BaseLayout>
 

@@ -11,15 +11,20 @@ interface Props {
   showBadge?: boolean;
 }
 
-const { title, description, tags, href, collection, showBadge = false } = Astro.props;
+const { title, description, date, tags, href, collection, showBadge = false } = Astro.props;
+
+const dateStr = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
 ---
 
-<a href={href} class="post-card">
-  {showBadge && (
-    <div class="post-card-meta">
-      <Badge variant={collection}>{collection}</Badge>
-    </div>
-  )}
+<a href={href} class="post-card" data-collection={collection}>
+  <div class="post-card-meta">
+    {showBadge && <Badge variant={collection}>{collection}</Badge>}
+    <time class="post-card-date" datetime={date.toISOString()}>{dateStr}</time>
+  </div>
   <h2 class="post-card-title">{title}</h2>
   <p class="post-card-desc">{description}</p>
   {tags.length > 0 && (
